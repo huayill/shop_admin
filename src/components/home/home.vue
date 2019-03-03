@@ -19,27 +19,23 @@
         <!-- 菜单列表 -->
         <el-menu
           :router="true"
-          default-active="/users"
+          default-active="$route.path"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
         >
-          <el-submenu index="1">
+          <el-submenu v-for="item1 in menusList" :key="item1.id" :index="item1.id+''">
             <!-- 自定义标题 -->
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{item1.authName}}</span>
             </template>
-            <el-menu-item index="/users">用户列表</el-menu-item>
-          </el-submenu>
-          <el-submenu index="2">
-            <!-- 自定义标题 -->
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>权限管理</span>
-            </template>
-            <el-menu-item index="/roles">角色列表</el-menu-item>
-            <el-menu-item index="/rights">权限列表</el-menu-item>
+            <!-- index="/users" -->
+            <el-menu-item
+              v-for="item2 in item1.children"
+              :key="item2.id"
+              :index="'/' + item2.path"
+            >{{item2.authName}}</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
@@ -51,6 +47,14 @@
 </template>
 <script>
 export default {
+  data () {
+    return {
+      menusList: []
+    }
+  },
+  created () {
+    this.loadLeftMenus()
+  },
   methods: {
     // 退出功能
     async logout () {
@@ -77,34 +81,19 @@ export default {
           message: '已取消删除'
         })
       }
+    },
+    handleOpen (key, keyPath) {
+      console.log(key, keyPath)
+    },
+    handleClose (key, keyPath) {
+      console.log(key, keyPath)
+    },
+    // 加载左侧菜单权限
+    async loadLeftMenus () {
+      let res = await this.$axios.get('menus')
+      console.log(res)
+      this.menusList = res.data.data
     }
-    //   // 点击了确定
-    //   .then(() => {
-    //     // 1.提示退出
-    //     // 以后实际工作中,肯定是要有个退出接口的,本地服务器没有,暂时清空token值
-    //     // 1.清空token值
-    //     localStorage.removeItem('token')
-    //     // 2.跳回到login界面
-    //     this.$router.push('/login')
-    //     this.$message({
-    //       type: 'success',
-    //       message: '删除成功!',
-    //       duration: 800
-    //     })
-    //   })
-    //   // 点击取消
-    //   .catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '已取消删除'
-    //     })
-    //   })
-  },
-  handleOpen (key, keyPath) {
-    console.log(key, keyPath)
-  },
-  handleClose (key, keyPath) {
-    console.log(key, keyPath)
   }
 }
 </script>

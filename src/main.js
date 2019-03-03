@@ -12,6 +12,9 @@ import router from './router/router.js'
 
 // 处理axios的一些问题
 import axios from 'axios'
+// 引入element-tree-grid
+import ElTreeGrid from 'element-tree-grid'
+Vue.component(ElTreeGrid.name, ElTreeGrid)
 // 处理第一个问题
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 // 处理第二个问题

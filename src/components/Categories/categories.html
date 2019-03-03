@@ -1,0 +1,32 @@
+<div>
+  <!-- 按钮 -->
+  <el-button type="success" plain>添加分类</el-button>
+  <!-- 商品分类列表 -->
+  <el-table :data="categoriesList" style="width: 100%">
+    <el-table-tree-column file-icon="icon icon-file" folder-icon="icon icon-folder" prop="cat_name" label="分类名称" tree-key='cate_id'
+      width="220"></el-table-tree-column>
+    <!-- <el-table-column prop="cat_name" label="分类名称" width="220"> -->
+    </el-table-column>
+    <el-table-column prop="cat_deleted" label="是否有效" width="180">
+      <template slot-scope='scope'>
+        {{scope.row.cat_deleted ? '否' : '是'}}
+      </template>
+    </el-table-column>
+    <el-table-column prop="cat_level" label="层级">
+      <template slot-scope='scope'>
+        <span v-if='scope.row.cat_level=== 0'>一级</span>
+        <span v-else-if='scope.row.cat_level === 1'>二级</span>
+        <span v-else>三级</span>
+      </template>
+    </el-table-column>
+    <el-table-column prop="address" label="操作">
+      <template slot-scope='scope'>
+        <el-button size='mini' plain type="primary" icon="el-icon-edit"></el-button>
+        <el-button size='mini' plain type="danger" icon="el-icon-delete"></el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+  <!-- 分页 -->
+  <el-pagination background layout="prev, pager, next" :total="32">
+  </el-pagination>
+</div>

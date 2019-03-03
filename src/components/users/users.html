@@ -15,11 +15,11 @@
     </el-col>
     <el-col :span='
           3'>
-      <el-button @click="dialogFormVisible = true">添加用户</el-button>
+      <el-button @click='showAddUserDialog'>添加用户</el-button>
     </el-col>
   </el-row>
   <!-- 列表 -->
-  <el-table :data=" UserList" stripe style="width: 100%">
+  <el-table :data="userList">
     <el-table-column prop="username" label="姓名" width="180"></el-table-column>
     <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
     <el-table-column prop="mobile" label="电话"></el-table-column>
@@ -31,9 +31,9 @@
     </el-table-column>
     <el-table-column label="操作">
       <template slot-scope="scope">
-        <el-button size='mini' plain type="primary" icon="el-icon-edit"></el-button>
+        <el-button size='mini' plain type="primary" icon="el-icon-edit" @click='showEditUserDialog(scope.row)'></el-button>
         <el-button size='mini' plain type="danger" icon="el-icon-delete" @click='delUser(scope.row.id)'></el-button>
-        <el-button size='mini' plain type='success' icon="el-icon-check">分配角色</el-button>
+        <el-button size='mini' plain type='success' icon="el-icon-check" @click='showAssignRoleDialog(scope.row)'>分配角色</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -41,9 +41,9 @@
   <el-pagination @current-change='pageChanged' background layout="prev, pager, next" :current-page='pagenum' :total="total"
     :page-size="2">
   </el-pagination>
-  <!-- 添加用户对话框 -->
-  <el-dialog title="添加用户" :visible.sync="dialogAddUserVisible">
-    <el-form :model="addUserform" label-width="180px" :rules='rules'>
+  <!-- 第一个对话框:添加用户对话框 -->
+  <el-dialog title="添加用户" @close='addUserDialogClosed' :visible.sync="dialogAddUserVisible">
+    <el-form ref='addUserFormRef' :model="addUserform" label-width="180px" :rules='rules'>
       <el-form-item label="用户名" prop='username'>
         <el-input v-model="addUserform.username" autocomplete="off"></el-input>
       </el-form-item>
@@ -59,7 +59,43 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogAddUserVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogAddUserVisible = false">确 定</el-button>
+      <el-button type="primary" @click="addUser">确 定</el-button>
+    </div>
+  </el-dialog>
+  <!-- 第二个对话框:编辑用户对话框 -->
+  <el-dialog title="编辑用户" :visible.sync="dialogEditUserVisible">
+    <el-form :model="editUserForm" label-width='180px'>
+      <el-form-item label="用户名">
+        <el-tag type="info">{{editUserForm.username}}</el-tag>
+        </el-input>
+      </el-form-item>
+      <el-form-item label="邮箱">
+        <el-input v-model="editUserForm.email" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="电话">
+        <el-input v-model="editUserForm.mobile" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogEditUserVisible = false">取 消</el-button>
+      <el-button type="primary" @click="editUser">确 定</el-button>
+    </div>
+  </el-dialog>
+  <!-- 第三个对话框:分配角色 -->
+  <el-dialog title="分配角色" :visible.sync="dialogAssignRolesVisible">
+    <el-form :model="AssignRolesForm" label-width="100px">
+      <el-form-item label="用户名">
+        <el-tag>{{ AssignRolesForm.username}}</el-tag>
+      </el-form-item>
+      <el-form-item label="角色列表">
+        <el-select v-model="AssignRolesForm.rid" placeholder="请选择角色">
+          <el-option v-for='item in rolesList' :key='item.id' :label="item.roleName" :value="item.id"></el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogAssignRolesVisible = false">取 消</el-button>
+      <el-button type="primary" @click="startAssignRole">确 定</el-button>
     </div>
   </el-dialog>
 </div>
